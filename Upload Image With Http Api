@@ -1,0 +1,30 @@
+Savedata() async {
+    log(email.text);
+    EasyLoading.show(status: 'loading...');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var cid = prefs.getString('regid');
+    final uri = Uri.parse(serves.url + "fetchcust.php");
+    var request = http.MultipartRequest('POST', uri);
+
+    request.fields['update'] = "";
+    if (image == null) {
+    } else {
+      var images =
+          await http.MultipartFile.fromPath("image", image!.path.toString());
+
+      request.files.add(images);
+    }
+    var response = await request.send();
+    var response1 = await http.Response.fromStream(response);
+    if (response.statusCode == 200) {
+      print('Image Uploaded ${response1.body}');
+
+      setname();
+
+      EasyLoading.dismiss();
+
+      // Navigator.pop(context, 'OK');
+    } else {
+      EasyLoading.showError('Failed with Error');
+    }
+  }
