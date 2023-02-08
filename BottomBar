@@ -1,0 +1,113 @@
+
+
+class MyBottomBar extends StatefulWidget {
+  const MyBottomBar({super.key});
+
+  @override
+  State<MyBottomBar> createState() => _MyBottomBarState();
+}
+
+class _MyBottomBarState extends State<MyBottomBar> {
+  int _selectedIndex = 0;
+  static const List<Widget> _widgetOptions = <Widget>[
+    HomeFirst(),
+    LovingParadise(),
+    InviesScreen(),
+    WhishList(),
+    MyChecklist()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    // This dialog will exit your app on saying yes
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit an App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (_selectedIndex > 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+          return false;
+        }
+        if (_selectedIndex == 0) {
+          return _onWillPop();
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: ImageIcon(
+                  AssetImage("assets/home.png"),
+                  color: Colors.grey,
+                ),
+                label: 'Homepage'),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage("assets/vendor.png"),
+                color: Colors.grey,
+              ),
+              label: 'Vendor',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage("assets/invite.png"),
+                color: Colors.grey,
+              ),
+              label: 'E-Invites',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage("assets/wishlist.png"),
+                color: Colors.grey,
+              ),
+              label: 'Wishlist',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage("assets/Icon/checklist.png"),
+                color: Colors.grey,
+              ),
+              label: 'Checklist',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+          onTap: _onItemTapped,
+        ),
+      ),
+    );
+  }
+}
